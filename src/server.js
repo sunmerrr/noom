@@ -1,4 +1,6 @@
 import express from "express";
+import http from "http";
+import WebSocket from "ws";
 
 const app = express();
 
@@ -15,5 +17,14 @@ app.use("/public", express.static(__dirname + "/public"));
 app.get("/", (req, res) => res.render("home"));
 app.get("/*", (req, res) => res.redirect("/"))
 
+// websocket 서버만 사용하고 싶으면 ws://localhost:3000 를 사용해도 됨
 const handleListen = () => console.log("Listening on http://localhost:3000");
 app.listen(3000, handleListen);
+
+
+// websocket server를 http 서버 위에 설정
+// 같은 포트 넘버를 사용하기 위해서 함께 설정함
+const server = http.createServer(app);
+const wss = new WebSocket.Server({server})
+
+server.listen(3000, handleListen)
