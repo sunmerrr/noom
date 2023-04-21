@@ -19,12 +19,20 @@ app.get("/*", (req, res) => res.redirect("/"))
 
 // websocket 서버만 사용하고 싶으면 ws://localhost:3000 를 사용해도 됨
 const handleListen = () => console.log("Listening on http://localhost:3000");
-app.listen(3000, handleListen);
+// app.listen(3000, handleListen);
 
 
 // websocket server를 http 서버 위에 설정
 // 같은 포트 넘버를 사용하기 위해서 함께 설정함
 const server = http.createServer(app);
-const wss = new WebSocket.Server({server})
+const WebSocketServer = new WebSocket.Server({server})
+
+
+WebSocketServer.on("connection", (socket) => {
+  console.log("Connected to Browser");
+  socket.on("close", () => console.log("Desconnected from the Browser"))
+  socket.on("message", (message) => {console.log(message)})
+  socket.send("hello");
+});
 
 server.listen(3000, handleListen)
