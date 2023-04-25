@@ -13,6 +13,7 @@ socket.addEventListener("open", () => {
   console.log("Connected to Server");
 });
 
+// message 받기
 socket.addEventListener("message", (message) => {
   const li = document.createElement("li");
   
@@ -48,6 +49,8 @@ function hanldeNickSubmit(event) {
   event.preventDefault();
   const input = nickForm.querySelector("input")
   socket.send(makeMessage("nickname", input.value));
+  input.value = ""
+
 }
 
 

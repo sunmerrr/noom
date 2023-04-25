@@ -31,12 +31,19 @@ const sockets = [];
 
 WebSocketServer.on("connection", (socket) => {
   sockets.push(socket)
+  socket["nickname"] = "Anonymous" // socket에 데이터 저장하기
   console.log("Connected to Browser");
   socket.on("close", () => console.log("Desconnected from the Browser"))
+
   socket.on("message", (message) => {
-    const parsed = JSON.parse(message.toString())
-    if(parsed.type === "new_message") {
-      sockets.forEach(aSocket => aSocket.send(parsed.payload))
+    const messageParsed = JSON.parse(message.toString())
+
+    switch(messageParsed.type) {
+      case "new_message":
+        sockets.forEach(aSocket => aSocket.send(`${socket.nickname}: ${messageParsed.payload}`))
+        return
+      case "nickname":
+        socket.nickname = messageParsed.payload
     }
   });
 });
