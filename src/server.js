@@ -25,7 +25,7 @@ const handleListen = () => console.log("Listening on http://localhost:3000");
 // websocket server를 http 서버 위에 설정
 // 같은 포트 넘버를 사용하기 위해서 함께 설정함
 const server = http.createServer(app);
-const WebSocketServer = new WebSocket.Server({server})
+const WebSocketServer = new WebSocket.Server({server});
 
 const sockets = [];
 
@@ -34,7 +34,10 @@ WebSocketServer.on("connection", (socket) => {
   console.log("Connected to Browser");
   socket.on("close", () => console.log("Desconnected from the Browser"))
   socket.on("message", (message) => {
-    socket.send(message)
+    const parsed = JSON.parse(message.toString())
+    if(parsed.type === "new_message") {
+      sockets.forEach(aSocket => aSocket.send(parsed.payload))
+    }
   });
 });
 
