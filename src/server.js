@@ -29,9 +29,11 @@ const io = SocketIO(server);
 // 2. websocket을 사용할 수 없으면 다른 라이브러리 이용함
 
 io.on('connection', socket => {
-  socket.on('enterRoom', (roomName, done) => {
-    socket.join(roomName);
-    console.log(done());
+  socket.onAny(event => console.log(`Socket Event: ${event}`));
+  socket.on('enter_room', (roomName, done) => {
+    console.log(socket.id);
+    socket.join(roomName); // socket.leave , socket.to().to().emit()
+    done();
   });
 });
 
