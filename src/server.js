@@ -30,10 +30,12 @@ const io = SocketIO(server);
 
 io.on('connection', socket => {
   socket.onAny(event => console.log(`Socket Event: ${event}`));
+
   socket.on('enter_room', (roomName, done) => {
-    console.log(socket.id);
-    socket.join(roomName); // socket.leave , socket.to().to().emit()
+    socket.join(roomName); // socket.leave() , socket.to().to().emit()
+    console.log('socket.rooms', roomName, socket.rooms, socket.id);
     done();
+    socket.to(roomName).emit('welcome', socket.id);
   });
 });
 
