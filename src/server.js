@@ -28,6 +28,8 @@ const io = SocketIO(server);
 // 1. 연결이 끊어지면 자동을 재연결 시도
 // 2. websocket을 사용할 수 없으면 다른 라이브러리 이용함
 
+
+// socket.io 로 소통하기
 io.on('connection', socket => {
   socket.onAny(event => console.log(`Socket Event: ${event}`));
 
@@ -37,7 +39,22 @@ io.on('connection', socket => {
     done();
     socket.to(roomName).emit('welcome', socket.id);
   });
+
+  socket.on("disconnecting", () => {
+    socket.rooms.forEach(room => {
+      socket.to(room).emit("bye")
+    })
+  })
+
+  socket.on("new_message", (msg, room, done) => {
+    socket.to(room).emit("new_messgae", meg);
+    done();
+  })
 });
+
+
+
+// websocket 으로 소통하기
 
 // const WebSocketServer = new WebSocket.Server({ server });
 // const sockets = [];
