@@ -40,6 +40,7 @@ instrument(io, {
 io.on("connection", socket => {
   socket.on("join_room", (roomName, done) => {
     socket.join(roomName);
+    done();
   })
 })
 
