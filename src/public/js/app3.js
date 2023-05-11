@@ -116,6 +116,7 @@ async function handleWelcomeSubmit(event) {
 welcomeForm.addEventListener("submit", handleWelcomeSubmit)
 
 // socket code
+// 방을 만든 브라우저에서 돌아감
 socket.on("welcome", async () => {
   // create offer (create room side)
   const offer = await myPeerConnection.createOffer();
@@ -124,14 +125,40 @@ socket.on("welcome", async () => {
   socket.emit('offer', offer, roomName)
 })
 
-socket.on('offer', offer => {
+// 방에 접속한 브라우저에서 돌아감
+socket.on('offer', async offer => {
+  console.log('received the offer')
   myPeerConnection.setRemoteDescription(offer)
+  const answer = await myPeerConnection.createAnswer();
+  myPeerConnection.setLocalDescription(answer)
+  socket.emit('answer', answer, roomName)
+  console.log('sent the answer')
+
+})
+
+// 방을 만든 브라우저에서 받음
+socket.on('answer', answer => {
+  console.log('received the answer')
+  myPeerConnection.setRemoteDescription(answer)
+
+})
+
+socket.on('ice', ice=> {
+  console.log('received candidate')
+  myPeerConnection.addIceCandidate(ice)
 })
 
 // RTC code
 function makeConnection() {
   myPeerConnection = new RTCPeerConnection();
+  myPeerConnection.addEventListener('icecandidate', handleIce);
   myStream
     .getTracks()
     .forEach(track => myPeerConnection.addTrack(track, myStream));
+}
+
+function handleIce(data) {
+  console.log('send candidate')
+  socket.emit('ice', data.candidate, roomName)
+  // console.log(data)
 }
